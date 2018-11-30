@@ -3,7 +3,7 @@ let router = express.Router();
 
 let admin = require('firebase-admin');
 
-let serviceAccount = require('./test-pfacs-document')
+let serviceAccount = require('../bin/test-pfacs-document')
 let researcherList = require("./researcher_list");
 
 let researcherMap = {}
@@ -84,6 +84,7 @@ function addUserLog (latest, key) {
 admin.auth().app
     .database()
     .ref(`/users/`)
+    .limitToLast(2)
     // .orderByChild('userEmail')
     // .equalTo('visheshkay@gmail.com')
     .on("child_added",(snapshot) =>{

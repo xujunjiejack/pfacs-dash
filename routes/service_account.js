@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
 
-let credential = require('./test-pfacs-document.json');
+let credential = require('../bin/test-pfacs-document.json');
 let google = require('googleapis')
 
 router.post('/access', (req, res, next)=>{

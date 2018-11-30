@@ -5,7 +5,7 @@ const {google} = require('googleapis');
 let firebase = require('firebase');
 
 const {OAuth2Client} = require('google-auth-library');
-let configuration = require("./configuration");
+let configuration = require("../bin/configuration");
 
 let CLIENT_ID =configuration.client_ID
 const client = new OAuth2Client(CLIENT_ID);

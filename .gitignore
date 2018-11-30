@@ -67,3 +67,6 @@ client/semantic
 client/semantic.json
 client/src/config.js
 routes/test-pfacs-document.json
+client/README.md
+bin/configuration.js
+bin/test-pfacs-document.json
