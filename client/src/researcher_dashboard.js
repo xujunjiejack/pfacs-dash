@@ -182,7 +182,7 @@ class ResearcherDashboard extends Component{
         }
         console.log(userEmails)
         let item = userList[userEmails[0]]
-        let displayHeaders = ["currentScreen", "currentCash", "lastTime", "latestAction", "userid", "currentTurn"]
+        let displayHeaders = ["currentScreen", "currentCash", "lastTime", "latestAction", "currentTurn", "extraInfo",  "userid"]
         let headers = Object.keys(item)
         headers = displayHeaders
 

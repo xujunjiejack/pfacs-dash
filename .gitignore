@@ -70,3 +70,5 @@ routes/test-pfacs-document.json
 client/README.md
 bin/configuration.js
 bin/test-pfacs-document.json
+client/python3.7/*
+.ipynb*

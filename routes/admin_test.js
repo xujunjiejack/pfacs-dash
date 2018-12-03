@@ -29,6 +29,15 @@ function addUserLog (latest, key) {
     let currentCash = 0;
     let currentTurn = "";
     let currentScreen = "";
+    let extraInfo = {
+        "trendsScreen": 0,
+        "songReleases": 0,
+        "signedBands": 0,
+        "dataCollects": 0,
+        "signedArtists": 0,
+        "lineChartSeen": 0,
+        "insightsScreen": 0
+    };
     let logKeys = Object.keys(latest["logs"]);
 
     for (let l in logKeys) {
@@ -48,14 +57,36 @@ function addUserLog (latest, key) {
             latestEpoch = thislog["epochTime"];
             latestRealTime = thislog["realTimeUTC"];
             latestAction = thislog["triggerAction"] + ": " + thislog["actionValue"];
+            if (thislog["signedBandInfo"] != undefined){
+                extraInfo["signedBands"] = thislog["signedBandInfo"]["numSignedBands"];
+            }
         }
         action = {
             "currentScreen": thislog["currentScreen"],
             "currentCash": thislog["currentScreen"],
             "currentTurn": thislog["currentTurn"],
             "epoch": thislog["epochTime"],
-            "actionValue": thislog["triggerAction"] + ": " + thislog["actionValue"]
+            "actionValue": thislog["triggerAction"] + ": " + thislog["actionValue"],
+            "eventId": logKeys[l]
         };
+        if (action["currentScreen"] == "trendsScreen") {
+            extraInfo["trendsScreen"] += 1;
+        }
+        else if (action["currentScreen"] == "dataCollect") {
+            extraInfo["dataCollects"] += 1;   
+        }
+        else if (action["currentScreen"] == "insightsScreen") {
+            extraInfo["insightsScreen"] += 1;   
+        }
+        
+        if (thislog["triggerAction"] == "releasingSong") {
+            extraInfo["songReleases"] += 1;
+        }
+        
+        if (thislog["triggerAction"] == "clickedButton" && thislog["actionValue"] == "Line") {
+            extraInfo["lineChartSeen"] += 1;
+        }
+
         actionList.push(action);
     }
     console.log(email);
@@ -66,10 +97,13 @@ function addUserLog (latest, key) {
         "currentTurn": currentTurn,
         "lastActionTime": latestEpoch,
         "lastTime": latestRealTime,
+        "extraInfo": JSON.stringify(extraInfo),
         "latestAction": latestAction
     };
+    // console.log(extraInfo);
     usersWithActions[email] = {
         "userid": key, 
+        "extraInfo": extraInfo,
         "currentScreen": currentScreen, 
         "currentCash": currentCash,
         "currentTurn": currentTurn,
@@ -85,7 +119,7 @@ admin.auth().app
     .database()
     .ref(`/users/`)
     .limitToLast(2)
-    // .orderByChild('userEmail')
+    // .orderByChild('epoch')
     // .equalTo('visheshkay@gmail.com')
     .on("child_added",(snapshot) =>{
 
