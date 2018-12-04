@@ -34,10 +34,17 @@ function addUserLog (latest, key) {
         "songReleases": 0,
         "signedBands": 0,
         "dataCollects": 0,
-        "signedArtists": 0,
+        // "signedArtists": 0,
         "lineChartSeen": 0,
-        "insightsScreen": 0
+        "insightsScreen": 0,
+        "barChartSeen": 0,
+        "heatmapSeen": 0,
+        
+        "logCount": 0,
+        "sessions": 0,
+        "totalPlayTime": 0
     };
+    let sessionTime = 0;
     let logKeys = Object.keys(latest["logs"]);
 
     for (let l in logKeys) {
@@ -79,13 +86,37 @@ function addUserLog (latest, key) {
             extraInfo["insightsScreen"] += 1;   
         }
         
-        if (thislog["triggerAction"] == "releasingSong") {
-            extraInfo["songReleases"] += 1;
+
+        if (action["actionValue"] == "clickedButton: ReleaseFinishedSongButton"){
+            extraInfo["songReleases"] += 1;   
         }
-        
-        if (thislog["triggerAction"] == "clickedButton" && thislog["actionValue"] == "Line") {
+        else if (action["actionValue"] == "clickedButton: SignArtistButton") {
+            extraInfo["signedBands"] += 1;   
+        }
+        else if (action["actionValue"] == "clickedButton: Line") {
             extraInfo["lineChartSeen"] += 1;
         }
+        else if (action["actionValue"] == "clickedButton: Heatmap") {
+            extraInfo["heatmapSeen"] += 1;
+        }
+        else if (action["actionValue"] == "clickedButton: Bar") {
+            extraInfo["barChartSeen"] += 1;
+        }
+        
+        if (thislog["upTimeSeconds"] < sessionTime) {
+            extraInfo["totalPlayTime"] += sessionTime;
+            sessionTime = thislog["upTimeSeconds"];
+            extraInfo["sessions"] += 1; 
+        }
+        else {
+            sessionTime = thislog["upTimeSeconds"];
+        }
+
+        extraInfo["logCount"] += 1;
+
+        // if (thislog["triggerAction"] == "clickedButton" && thislog["actionValue"] == "Line") {
+        //     extraInfo["lineChartSeen"] += 1;
+        // }
 
         actionList.push(action);
     }
@@ -97,7 +128,7 @@ function addUserLog (latest, key) {
         "currentTurn": currentTurn,
         "lastActionTime": latestEpoch,
         "lastTime": latestRealTime,
-        "extraInfo": JSON.stringify(extraInfo),
+        "extraInfo": JSON.stringify(extraInfo, null, 4),
         "latestAction": latestAction
     };
     // console.log(extraInfo);
@@ -118,9 +149,9 @@ function addUserLog (latest, key) {
 admin.auth().app
     .database()
     .ref(`/users/`)
-    .limitToLast(2)
-    // .orderByChild('epoch')
-    // .equalTo('visheshkay@gmail.com')
+    // .limitToLast(10)
+    // .orderByChild('CMSLogVersion')
+    // .equalTo('1.10')
     .on("child_added",(snapshot) =>{
 
     // Put your algorithm here
@@ -137,7 +168,7 @@ admin.auth().app
 //currently this returns all logs the user playing
 //add an epoch timestamp, or some other filter to only get the recent ones
 //and only append to existing userlog, not remake the whole thing
-admin.auth().app.database().ref(`/users/`).on("child_changed",(snapshot) =>{
+admin.auth().app.database().ref(`/users/`).orderByChild("epoch").on("child_changed",(snapshot) =>{
     l = snapshot.val();
     log = Object.keys(l["logs"]);
     // console.log(log);
