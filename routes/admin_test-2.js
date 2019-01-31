@@ -20,6 +20,7 @@ let users = {};
 let usersWithActions = {};
 let printLogs = 0;
 
+
 function makingExtraInfo (extraInfo, action, thislog) {
     if (action["currentScreen"] == "trendsScreen") {
         extraInfo["trendsScreen"] += 1;
@@ -161,119 +162,61 @@ function addUserLog (latest, key) {
 
 
 function startUserListener(userId) {
-    admin.auth().app.database().ref("/users/" + userId + "/logs").on("child_added",(snapshot) =>{ 
-        l = snapshot.val();
-        // if (Object.keys(l).includes("userEmail")) {
-        newLog(snapshot, userId);
-        // }
-        // else {
-            // addUserLog(l, usersOfInterest[u]);
-        // }
-    });
+    if (runningListeners.indexOf(userId) == -1){
+        runningListeners.push(userId);
+        admin.auth().app.database().ref("/users/" + userId + "/logs").on("child_added",(snapshot) =>{ 
+            l = snapshot.val();
+            // if (Object.keys(l).includes("userEmail")) {
+            newLog(snapshot, userId);
+
+            // }
+            // else {
+                // addUserLog(l, usersOfInterest[u]);
+            // }
+        });
+    }
+
+    
+}
+
+
+function addUser(snap) {
+    snapval = snap.val();
+    userObj = {snapval["userEmail"]: snap.key};
+    //add a teacher array to this userObj
+    //post this to a userLink thingie in the database
 }
 
 admin.auth().app
     .database()
     .ref(`/users/`)
     .limitToLast(1)
-    // .orderByChild('CMSLogVersion')
-    // .orderByChild('email')
-    // .equalTo('1.10')
     .on("child_added",(snapshot) =>{
-    // Put your algorithm here
         console.log("reading dataaaa")
-        // latest = snapshot.val();
-        // console.log(snapshot.key);
-        
-        // addUserLog(latest, snapshot.key);
-
-        // console.log("new user");
         startUserListener(snapshot.key);
-        //
+        addUser(snapshot);
 });
 
 function newLog(snapshot, userId) {
     thislog = snapshot.val();
     key = snapshot.key;
-    // console.log(l);
-    // console.log(userId);
-    // thislog = l
-    action = {
-        "currentScreen": thislog["currentScreen"],
-        "currentCash": thislog["currentScreen"],
-        "currentTurn": thislog["currentTurn"],
-        "epoch": thislog["epochTime"],
-        "actionValue": thislog["triggerAction"] + ": " + thislog["actionValue"],
-        "eventId": key
-    };
-    // console.log(thislog);
-
-    currentScreen = thislog["currentScreen"];
-    currentCash = thislog["currentCash"];
-    currentTurn = thislog["currentTurn"];
-    latestEpoch = thislog["epochTime"];
-    latestRealTime = thislog["realTimeUTC"];
-    latestAction = action["actionValue"];
-    email = thislog["userEmail"];
-
-    if (users[email] == undefined) {
-        extraInfo = {
-            "trendsScreen": 0,
-            "songReleases": 0,
-            "signedBands": 0,
-            "dataCollects": 0,
-            // "signedArtists": 0,
-            "lineChartSeen": 0,
-            "insightsScreen": 0,
-            "barChartSeen": 0,
-            "heatmapSeen": 0,
-            
-            "logCount": 0,
-            "sessions": 1,
-            "totalPlayTime": 0,
-            "sessionTime": 0
-        };
-        actionList = [];
-        console.log("first time user");
-    }
-    else {
-        extraInfo = users[email]["extraInfoObj"];
-        actionList = users[email]["actionList"];
-    }
-
-    extraInfo = makingExtraInfo(extraInfo, action, thislog);
-
-    if (thislog["signedBandInfo"] != undefined){
-        extraInfo["signedBands"] = thislog["signedBandInfo"]["numSignedBands"];
-    }
-
-    actionList.push(action)
-
-    users[email] = {
-        "userid": userId, 
-        "currentScreen": currentScreen, 
-        "currentCash": currentCash,
-        "currentTurn": currentTurn,
-        "lastActionTime": latestEpoch,
-        "lastTime": latestRealTime,
-        "extraInfoObj": extraInfo,
-        "extraInfo": JSON.stringify(extraInfo, null, 4),
-        "latestAction": latestAction,
-        "actionList": actionList
-    };
+    //remove useremail and post thislog to mongo
+    //
 
 }
+
+runningListeners = [];
 
 //currently this returns all logs the user playing
 //add an epoch timestamp, or some other filter to only get the recent ones
 //and only append to existing userlog, not remake the whole thing
 
-usersOfInterest = ["50NI0CWLNfa9308WhwLUCpj6Bok2", "as7shPBwZgP3AVdivW9FJI2tvks1", "4px4iAGrXnVVhuKHmiwTxZ3LrsJ2", "L9U2ruG2GEehOQm7QfHZ38lPPrC2", "rh5bYODfSidJIOL29rhlUSU3rN12", "5TarubDZuqdzP6g8CyS1pSGnjCg2", "otBi93MndUbe9HoFpku8OxWa9BG3", "cXr9iszewDZINcZKP0LrvMEwwb02", "3nXHOjd21IUCHPp4ThpEEmRJWvu2", "3mAWZBjZarQARa0qcucMHnTagJ22", "yUhLSMFPKcgWdGOXlJOdIOe5RBG3", "t8ghiZUemDf0a7xB5vulSCLCrHh2", "ZA2vdxQ5ktawvhJCWrk1X0RYTpS2", "sneNl34qKCdybUEmUgi7sKqqSlp2", "8XCYd15GyAWL4CTTqi1aZqqIbld2", "SSnGvYkY6TeoO2JGGa0dA5b8Fwk2", "oRKUlfkSoeXJ1OyEA0bJ0ek79d22", "o1aFY2nwJpT4V6mLPKBp6RBpO603", "trIhAZFFAIYMGDGTrF65b9pyBal2", "6ii4h2K9M2QPeWHPGrCqu5VHs0n2", "RPljyXZCFMeXeDErvK2bZzYM6fs1", "fMB737g5ICRi8SgNLZpJnD1NEbH3", "ovL8xL5mWVeAewYEE5KJValCFc13", "2zDmaB8GyKUO59ptShUJEY23Fm13", "7h51jYtYMWgLpTey8Yvtin147xR2", "d0LoIBCLC2Mzo0dR1V3xzInzhW72"];
-
+// usersOfInterest = ["50NI0CWLNfa9308WhwLUCpj6Bok2", "as7shPBwZgP3AVdivW9FJI2tvks1", "4px4iAGrXnVVhuKHmiwTxZ3LrsJ2", "L9U2ruG2GEehOQm7QfHZ38lPPrC2", "rh5bYODfSidJIOL29rhlUSU3rN12", "5TarubDZuqdzP6g8CyS1pSGnjCg2", "otBi93MndUbe9HoFpku8OxWa9BG3", "cXr9iszewDZINcZKP0LrvMEwwb02", "3nXHOjd21IUCHPp4ThpEEmRJWvu2", "3mAWZBjZarQARa0qcucMHnTagJ22", "yUhLSMFPKcgWdGOXlJOdIOe5RBG3", "t8ghiZUemDf0a7xB5vulSCLCrHh2", "ZA2vdxQ5ktawvhJCWrk1X0RYTpS2", "sneNl34qKCdybUEmUgi7sKqqSlp2", "8XCYd15GyAWL4CTTqi1aZqqIbld2", "SSnGvYkY6TeoO2JGGa0dA5b8Fwk2", "oRKUlfkSoeXJ1OyEA0bJ0ek79d22", "o1aFY2nwJpT4V6mLPKBp6RBpO603", "trIhAZFFAIYMGDGTrF65b9pyBal2", "6ii4h2K9M2QPeWHPGrCqu5VHs0n2", "RPljyXZCFMeXeDErvK2bZzYM6fs1", "fMB737g5ICRi8SgNLZpJnD1NEbH3", "ovL8xL5mWVeAewYEE5KJValCFc13", "2zDmaB8GyKUO59ptShUJEY23Fm13", "7h51jYtYMWgLpTey8Yvtin147xR2", "d0LoIBCLC2Mzo0dR1V3xzInzhW72"];
+// usersOfInterest = [];
 // usersOfInterest = ["d0LoIBCLC2Mzo0dR1V3xzInzhW72"];
 
-for (u in usersOfInterest) {
-    console.log(usersOfInterest[u]);
+// for (u in usersOfInterest) {
+    // console.log(usersOfInterest[u]);
     /*
     admin.auth().app.database().ref("/users/" + usersOfInterest[u] + "/logs").on("child_added",(snapshot) =>{ 
         l = snapshot.val();
@@ -287,17 +230,17 @@ for (u in usersOfInterest) {
         }
         // newLog(l, usersOfInterest[u]);
     });*/
-    startUserListener(usersOfInterest[u]);
-}
+    // startUserListener(usersOfInterest[u]);
+// }
 
-// admin.auth().app.database().ref(`/users/`).orderByChild("epoch").on("child_changed",(snapshot) =>{
+admin.auth().app.database().ref(`/users/`).orderByChild("epoch").on("child_changed",(snapshot) =>{
 //     l = snapshot.val();
 //     log = Object.keys(l["logs"]);
 //     // console.log(log);
 //     addUserLog(l, snapshot.key);
 //     // console.log(log["triggerAction"]);
-
-// });
+    startUserListener(snapshot.key);
+});
 
 // setInterval(()=>{console.log(latest)},1000)
 // Add a

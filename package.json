@@ -24,6 +24,7 @@
     "googleapis": "^27.0.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
+    "mongodb": "^3.1.13",
     "morgan": "~1.9.0",
     "react-cookie": "^3.0.4"
   }
