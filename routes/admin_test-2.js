@@ -21,6 +21,55 @@ let usersWithActions = {};
 let printLogs = 0;
 
 
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+const url = 'mongodb://localhost:27017';
+
+// Database Name
+const dbName = 'pfacs';
+
+// Create a new MongoClient
+const client = new MongoClient(url);
+var db = null;
+var allActions = null;
+var playerInfo = null;
+
+
+function checkMakeCollection (collName, db) {
+    db.collection(collName, {strict:true}, function(err, col3) {
+      assert.ok(err != null);
+      // Create the collection
+      db.createCollection(collName, function(err, result) {
+        // Retry to get the collection, should work as it's now created
+        db.collection(collName, {strict:true}, function(err, col3) {
+          assert.equal(null, err);
+        });
+      });
+    });
+}
+
+client.connect('mongodb://localhost:27017/', function(err, client) {
+    if (err) {
+        console.error(err);
+    }
+    db = client.db(dbname);
+    //collections which exist are per user info :playerInfo
+    //and action logs: allActions
+    // db.collectionNames(playerInfo, function(err, names) {
+    //     console.log('Exists: ', names.length > 0);
+    // });
+
+    // checkMakeCollection("playerInfo", db);
+    // checkMakeCollection("allActions", db);
+    allActions = db.collection('allActions');
+    playerInfo = db.collection('playerInfo');
+
+})
+
+
+
 function makingExtraInfo (extraInfo, action, thislog) {
     if (action["currentScreen"] == "trendsScreen") {
         extraInfo["trendsScreen"] += 1;
@@ -166,13 +215,7 @@ function startUserListener(userId) {
         runningListeners.push(userId);
         admin.auth().app.database().ref("/users/" + userId + "/logs").on("child_added",(snapshot) =>{ 
             l = snapshot.val();
-            // if (Object.keys(l).includes("userEmail")) {
             newLog(snapshot, userId);
-
-            // }
-            // else {
-                // addUserLog(l, usersOfInterest[u]);
-            // }
         });
     }
 
@@ -197,11 +240,28 @@ admin.auth().app
         addUser(snapshot);
 });
 
+/*
+each user has the following:
+    cash
+    turn
+    last move
+    playsession start
+    total time played
+    list of signedArtists
+    list of insights
+    list of songs
+    graphtypes used
+    storage/data management upgrades
+    
+*/
 function newLog(snapshot, userId) {
     thislog = snapshot.val();
     key = snapshot.key;
     //remove useremail and post thislog to mongo
-    //
+    
+    //if it's a signed band, 
+
+
 
 }
 
