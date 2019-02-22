@@ -72,3 +72,10 @@ bin/configuration.js
 bin/test-pfacs-document.json
 client/python3.7/*
 .ipynb*
+
+# JJ workstation file
+node.sh
+npm.sh
+start_mongo_server.sh
+start_mongo_shell.sh
+node_environment.sh

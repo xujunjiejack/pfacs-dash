@@ -20,7 +20,6 @@ let users = {};
 let usersWithActions = {};
 let printLogs = 0;
 
-
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
@@ -35,7 +34,6 @@ const client = new MongoClient(url);
 var db = null;
 var allActions = null;
 var playerInfo = null;
-
 
 function checkMakeCollection (collName, db) {
     db.collection(collName, {strict:true}, function(err, col3) {

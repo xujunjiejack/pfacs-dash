@@ -14,6 +14,16 @@ let config = configuration.firebase_config;
 firebase.initializeApp(config);
 let credential_uid = "";
 
+let MongoClient = require("mongodb").MongoClient
+console.log("hiiiiii")
+
+let db = undefined;
+
+MongoClient.connect("mongodb://localhost:27017").then(client=>{
+    db = client.db("playground")
+}
+)
+
 async function verify(token) {
     const ticket = await client.verifyIdToken({
         idToken: token,
@@ -52,6 +62,18 @@ function get_google_class (access_token, res1){
         }
     });
 }
+
+router.get('/mongodata', (req, res, next)=>{
+    if (db === undefined){
+        res.json(500, "db not connected")
+        return
+    }
+    console.log("mongodata")
+    let data = db.collection("stuff").find().toArray().then(
+        data => res.json(data)
+    )
+    }
+)
 
 router.post('/googlelogin',  (req, res, next)=>{
     // Account_info
