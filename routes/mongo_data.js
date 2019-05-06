@@ -80,11 +80,17 @@ studentStatusNS.on("connection", socket => {
             // create a new interval
             // add the new interval into the router as a new route
             // Actually a hidden bug is what if there are two sessions with the same students. Probably teacher id? 
-
             let roomId = chance.string({length: 5})
             socket.join(roomId)
 
-            // The algorithm connected to the mongodb will need to be placed here
+            // The algorithm connected to the mongodb will need to be placed here, with an updated stuff. 
+            /****
+             * The student data returned needs to be in the form of { "student name":0, "student name":1, "student name":2 }
+             * 0 means in-progress, 1 means stuck, 2 means disconnect
+             * Use studentStatusNS.to(roomId).emit("live status update", studentData) to send the information.
+             */
+
+            // mongodb.server 
             const msgInterval = setInterval( () => {
                 console.log(studentlist)
                 const studentData = {}
@@ -93,6 +99,7 @@ studentStatusNS.on("connection", socket => {
                 studentlist.forEach(x => {
                     studentData[x] = chance.weighted([0,1,2], [3,1,1])
                 })
+
                 studentStatusNS.to(roomId).emit("live status update", studentData)
             }, 5000)
             

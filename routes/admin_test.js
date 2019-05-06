@@ -3,14 +3,14 @@ let router = express.Router();
 
 let admin = require('firebase-admin');
 
-let serviceAccount = require('../bin/test-pfacs-document')
+// let serviceAccount = require('../bin/test-pfacs-document')
 let researcherList = require("./researcher_list");
 let researcherMap = {}
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://test-pfacs.firebaseio.com"
-})
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: "https://test-pfacs.firebaseio.com"
+// })
 
 
 let latest = "";
@@ -170,25 +170,25 @@ function startUserListener(userId) {
     });
 }
 
-admin.auth().app
-    .database()
-    .ref(`/users/`)
-    .limitToLast(1)
-    // .orderByChild('CMSLogVersion')
-    // .orderByChild('email')
-    // .equalTo('1.10')
-    .on("child_added",(snapshot) =>{
-    // Put your algorithm here
-        console.log("reading dataaaa")
-        // latest = snapshot.val();
-        // console.log(snapshot.key);
+// admin.auth().app
+//     .database()
+//     .ref(`/users/`)
+//     .limitToLast(1)
+//     // .orderByChild('CMSLogVersion')
+//     // .orderByChild('email')
+//     // .equalTo('1.10')
+//     .on("child_added",(snapshot) =>{
+//     // Put your algorithm here
+//         console.log("reading dataaaa")
+//         // latest = snapshot.val();
+//         // console.log(snapshot.key);
         
-        // addUserLog(latest, snapshot.key);
+//         // addUserLog(latest, snapshot.key);
 
-        // console.log("new user");
-        startUserListener(snapshot.key);
-        //
-});
+//         // console.log("new user");
+//         startUserListener(snapshot.key);
+//         //
+// });
 
 function newLog(snapshot, userId) {
     let thislog = snapshot.val();
@@ -285,7 +285,7 @@ for (let u in usersOfInterest) {
         }
         // newLog(l, usersOfInterest[u]);
     });*/
-    startUserListener(usersOfInterest[u]);
+    // startUserListener(usersOfInterest[u]);
 }
 
 // admin.auth().app.database().ref(`/users/`).orderByChild("epoch").on("child_changed",(snapshot) =>{

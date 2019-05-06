@@ -3,15 +3,17 @@ let router = express.Router();
 
 let admin = require('firebase-admin');
 
-let serviceAccount = require('../bin/test-pfacs-document')
+// let serviceAccount = require('../bin/test-pfacs-document')
 let researcherList = require("./researcher_list");
+
+let serviceAccount = {}
 
 let researcherMap = {}
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://test-pfacs.firebaseio.com"
-})
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: "https://test-pfacs.firebaseio.com"
+// })
 
 let latest = "";
 
