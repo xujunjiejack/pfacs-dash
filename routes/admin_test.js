@@ -5,7 +5,6 @@ let admin = require('firebase-admin');
 
 let serviceAccount = require('../bin/test-pfacs-document')
 let researcherList = require("./researcher_list");
-
 let researcherMap = {}
 
 admin.initializeApp({
@@ -261,7 +260,6 @@ function newLog(snapshot, userId) {
         "latestAction": latestAction,
         "actionList": actionList
     };
-
 }
 
 //currently this returns all logs the user playing

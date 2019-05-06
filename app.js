@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let adminTest = require('./routes/admin_test')
+let mongoData = require('./routes/mongo_data')
 let cors = require('cors')
 let serviceAccountRouter = require('./routes/service_account')
 
@@ -26,8 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/service_account', serviceAccountRouter);
-
 app.use('/admin_test', adminTest);
+app.use('/mongodata/', mongoData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

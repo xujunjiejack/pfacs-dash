@@ -79,3 +79,4 @@ npm.sh
 start_mongo_server.sh
 start_mongo_shell.sh
 node_environment.sh
+start_mongo_server_repl.sh

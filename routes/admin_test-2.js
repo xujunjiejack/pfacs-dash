@@ -13,7 +13,6 @@ admin.initializeApp({
     databaseURL: "https://test-pfacs.firebaseio.com"
 })
 
-
 let latest = "";
 
 let users = {};
