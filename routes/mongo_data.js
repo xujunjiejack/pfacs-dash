@@ -4,12 +4,9 @@ let {getMongodb, getChangeStream} = require("./mongo_connection")
 let io = require("socket.io")(8080)
 let Chance = require('chance')
 let chance = new Chance()
-console.log(chance.birthday())
-
 
 // Define a new namespace for the student status
 const studentStatusNS = io.of('/studentstatus')
-
 
 class SocketManager{
     
@@ -18,13 +15,27 @@ class SocketManager{
         // socket router will have router object with properties, which tracks all of the sockets
         // {interval: IntervalObject, sockets:socketNumber[], students: string[], roomId: string}
         this.socketsRouterForStudentStatus = []
-        
+        this.ioSockets = [] 
 
         this.sendMessage = (message) => {
             console.log("logging")
             if (this.sockets.length !== 0){
                 this.sockets[this.sockets.length-1].emit("message", message)
             }
+        }
+
+        this.addIOSockets = (socket) => {
+            this.ioSockets.push(socket)
+        }
+
+        this.sendIOMessage = (message) => {
+            for (let s in this.ioSockets){
+                s.emit("hi", message)
+            }            
+        }
+
+        this.removeIOSocket = (socket) => {
+            this.ioSockets = this.ioSockets.filter(s => s.id !== socket.id)
         }
 
         this.sendStudentStatusData = (message) => {
@@ -49,6 +60,10 @@ var socketManager = new SocketManager()
 
 // I can just stream the usage of how many times to use 
 io.on("connection", socket => {
+    socketManager.addIOSockets(socket)
+    socket.on("disconnect", () =>{ 
+        socketManager.removeIOSocket(socket)
+    })
     }
 )
 
@@ -165,6 +180,8 @@ function whetherTwoArraySame(arr1, arr2){
     return true
 }
 
+// By calling this router, the backend will constantly send a message to the front end as long 
+// anything changes in the database
 router.get('/start', (req,res,next) => {
     
     const changeStream = getMongodb().collection("allActions").watch();
@@ -172,7 +189,7 @@ router.get('/start', (req,res,next) => {
     changeStream.on("change", next =>{
         console.log(next)
         let data = next.fullDocument
-        socketManager.sendMessage(JSON.stringify(data))    
+        socketManager.sendIOMessage(JSON.stringify(data))    
     })
     res.json({ok:1})
 

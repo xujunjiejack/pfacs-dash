@@ -1,50 +1,24 @@
-## Setting up and running the app: 
+# PFACS Backend with mongodata
 
-To run the server, open a terminal and then type in
-**cd react-backend**   
-and then run   
+## Setting up and running the backend
+
+First type in <br>
 **npm install**  
-And then  
-**PORT=3001 node bin/www**  
-The terminal should get blocked by the server
 
-Then open another terminal. Type in  
-**cd react-backend/client** 
-Then type in  
-**npm install**  
-to install the dependency.  
-To run the react front-end then, type in   
-**npm start**  
+to install all the dependency.  
+To run the react back-end then, type in   
+**npm start**
 
-Open your browser, and type in  
-**localhost:3001**  
-into the address bar. You should be able to see a UI.
+The default port this server running on is **3001**. The front-end react app will use proxy to transfer the web service request to port 3000 to port 3001
 
-## Configuration files
-Both configuration files need to be placed under routes.
-One is test-pfacs-d******.json and the other is configuration.js.
-test-pfacs-d******.json will be used for service_account
-Configuration.js will be used for firebase.
+## Be aware
+This backend is only intended to be a playground for a specific file called mongo_data.js. Other routers won't work because I deleted the credential requirement. Since the mongo_data will call access to some data in mongo, to unleash the full power of mongo_data, run a mongo instance, with flag `--replSet rs0`, this will be useful for listening to the data change. 
 
-## How the UI works
-In the current user interface, the buttons on the first line are for different kinds of login.  
- 
-Firebase login and Google classroom will ask you for your google account
-If the connection is successful, then a line of message will show up.
+## mongo_data.js 
+This file contains couple ways to show how to work with front-end and backend 
+* First, it contains a socket manager. The socket manager manages the socket for IO for the live data update. 
+* Second, couple web service API is used to test how to send data from the mongo_data to the front-end through web service. 
 
-For Google classroom, when you click the newly created button on the left 
-of "Read Data", it will show the student email and name in the server terminal (
-which you entered PORT=3001 node bin/www) 
-
-For Firebase login, after you log in successfully, you can click the "Read Data"
-button to read the data under that user's account in Firebase. If you want to
-read different content, change the URL in line 166 in routes/users.js.
-
-The button for ServiceAccount will not ask anything, and only print result to the server terminal
-
-
-
-  
-
-
+May 8 <br>
+JJ 
 
